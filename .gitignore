@@ -1,5 +1,7 @@
 .idea/
 flask_blog.db
+app/static/uploads/*.*
+!app/static/uploads/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
