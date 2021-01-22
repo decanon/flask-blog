@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block title %}
+<title>My Post</title>
+{% endblock %}
+
+{% block button_create %}
+<a href="{{ url_for('[post].create_post') }}" class="btn btn-primary">+ Create POST</a>
+<br><br>
+{% endblock %}
+
+{% block post_buttons %}
+<a href="{{ url_for('[post].edit_post') }}?post_id={{ post.id }}" class="btn btn-primary">Edit</a>
+<button type="button" class="btn btn-danger btn-delete-modal" data-toggle="modal" data-post-id="{{ post.id }}"
+        data-target="#confirm-delete-modal">Delete</button>
+{% endblock %}
+
+{% block confirm_delete_modal %}
+<!-- The Modal -->
+<div class="modal" id="confirm-delete-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        Confirm Delete This Post?
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+          <a href="" class="btn btn-danger" id="confirm-delete-url">Yes</a>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block jscript %}
+<script type="application/javascript">
+$(document).on("click", ".btn-delete-modal", function () {
+    var post_id = $(this).data('post-id');
+<!--    console.log("btn-delete-modal click")-->
+    $("#confirm-delete-url").attr("href", "{{ url_for('[post].delete_post') }}?post_id="+post_id)
+});
+</script>
+{% endblock%}
+
+

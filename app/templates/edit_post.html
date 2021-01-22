@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Edit Post</title>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+
+  <!-- Blog Entries Column -->
+  <div class="col-md-8">
+
+    <h1 class="my-4">Edit Post</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'error' %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if post %}
+    <div class="mb-4">
+        <form method="post" action="{{ url_for('[post].edit_post') }}" enctype="multipart/form-data">
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input class="form-control" type="text" name='title' id='title' value="{{ post.title }}">
+            </div>
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea class="form-control" rows="5" id="content" name="content">{{ post.content }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="content">Image:</label>
+                {% if post.image_path == None %}
+                    <img class="card-img-top" src="{{ url_for('static', filename='images/default-post-image.png') }}" alt="Card image cap">
+                {% else %}
+                    <img class="card-img-top" src="{{ upload_folder+'/'+post.image_path }}" alt="Card image cap">
+                {% endif %}
+                <input type="file" name="image_file">
+            </div>
+            <div class="form-group">
+                <input type='submit' class="btn btn-primary" value='Edit Posting'>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+<!-- /.row -->
+{% endblock%}
+
+
+
