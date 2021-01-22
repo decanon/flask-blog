@@ -40,12 +40,16 @@
     <ul class="pagination justify-content-center mb-4">
       {% if has_prev %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page-1 }}">&lt;&lt; Prev</a>
+        <a class="page-link"
+           href="?page={{ page-1 }}{% if search_keyword %}{{ '&search_keyword='+search_keyword }}{% endif %}">
+          &lt;&lt; Prev</a>
       </li>
       {% endif %}
       {% if has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page+1 }}">Next &gt;&gt;</a>
+        <a class="page-link"
+           href="?page={{ page+1 }}{% if search_keyword %}{{ '&search_keyword='+search_keyword }}{% endif %}">
+          Next &gt;&gt;</a>
       </li>
       {% endif %}
     </ul>
@@ -60,16 +64,20 @@
       <h5 class="card-header">Search</h5>
       <div class="card-body">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search for...">
-          <span class="input-group-append">
-            <button class="btn btn-secondary" type="button">Go!</button>
-          </span>
+          {% block post_search_form %}
+          <form method="get" action="{{ url_for('admin.home') }}">
+            <span class="input-group-append">
+              <input type="text" name="search_keyword" class="form-control" placeholder="Search for...">
+              <button class="btn btn-secondary" type="submit">Go!</button>
+            </span>
+          </form>
+          {% endblock %}
         </div>
       </div>
     </div>
 
     <!-- Categories Widget -->
-    <div class="card my-4">
+    <!-- <div class="card my-4">
       <h5 class="card-header">Categories</h5>
       <div class="card-body">
         <div class="row">
@@ -101,15 +109,15 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Side Widget -->
-    <div class="card my-4">
+    <!-- <div class="card my-4">
       <h5 class="card-header">Side Widget</h5>
       <div class="card-body">
         You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
       </div>
-    </div>
+    </div> -->
 
     {% block confirm_delete_modal %}
     {% endblock %}

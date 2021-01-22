@@ -1,5 +1,7 @@
 import datetime
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from sqlalchemy import or_
+
 import app
 from app.admin.models import User
 from app.manage import login_required, db
@@ -16,18 +18,28 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def list_post():
     username = session.get('username')
     page = request.args.get('page')
+    search_keyword = request.args.get('search_keyword')
     if page is None:
         page = 1
     else:
         page = int(page)
 
-    total_data = db.session.query(Post).from_self().join(Post.user).filter(User.username == username).count()
     limit = 10
     offset = (page - 1) * limit
 
-    posts = db.session.query(Post).limit(limit).from_self()\
-        .join(Post.user).filter(User.username == username)\
-        .limit(limit).offset(offset).all()
+    if search_keyword is None:
+        total_data = db.session.query(Post).from_self().join(Post.user).filter(User.username == username).count()
+        posts = db.session.query(Post).from_self()\
+            .join(Post.user).filter(User.username == username)\
+            .limit(limit).offset(offset).all()
+    else:
+        total_data = db.session.query(Post).from_self().join(Post.user) \
+            .filter(or_(Post.title.like(f'%{search_keyword}%'), Post.content.like(f'%{search_keyword}%'))) \
+            .filter(User.username == username).count()
+        posts = db.session.query(Post).from_self() \
+            .join(Post.user).filter(User.username == username) \
+            .filter(or_(Post.title.like(f'%{search_keyword}%'), Post.content.like(f'%{search_keyword}%'))) \
+            .limit(limit).offset(offset).all()
 
     has_next = False
     if total_data > (offset + len(posts)):
@@ -39,7 +51,7 @@ def list_post():
 
     upload_folder = app.app.config['UPLOAD_FOLDER']
 
-    return render_template('post.html', posts=posts, page_title='My Post',
+    return render_template('post.html', posts=posts, page_title='My Post', search_keyword=search_keyword,
                            has_next=has_next, has_prev=has_prev, page=page, upload_folder=upload_folder)
 
 

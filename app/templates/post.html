@@ -15,6 +15,15 @@
         data-target="#confirm-delete-modal">Delete</button>
 {% endblock %}
 
+{% block post_search_form %}
+<form method="get" action="{{ url_for('[post].list_post') }}">
+  <span class="input-group-append">
+  <input type="text" name="search_keyword" class="form-control" placeholder="Search for...">
+  <button class="btn btn-secondary" type="submit">Go!</button>
+  </span>
+</form>
+{% endblock%}
+
 {% block confirm_delete_modal %}
 <!-- The Modal -->
 <div class="modal" id="confirm-delete-modal">

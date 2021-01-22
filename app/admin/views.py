@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, flash, session, redirect, url_for
+from sqlalchemy import or_
+
 from app.admin.models import User
 from app.post.models import Post
 from app.manage import db, login_required, admin_required
@@ -10,16 +12,26 @@ admin_blueprint = Blueprint('admin', __name__)
 @admin_blueprint.route('/')
 def home():
     page = request.args.get('page')
+    search_keyword = request.args.get('search_keyword')
     if page is None:
         page = 1
     else:
         page = int(page)
 
-    total_data = db.session.query(Post).count()
     limit = 10
     offset = (page - 1) * limit
 
-    posts = db.session.query(Post).limit(limit).offset(offset).from_self().join(Post.user).all()
+    if search_keyword is None:
+        posts = db.session.query(Post).limit(limit).offset(offset).from_self().join(Post.user).all()
+        total_data = db.session.query(Post).count()
+    else:
+        posts = db.session.query(Post).limit(limit).offset(offset).from_self()\
+            .join(Post.user)\
+            .filter(or_(Post.title.like(f'%{search_keyword}%'), Post.content.like(f'%{search_keyword}%')))\
+            .all()
+        total_data = db.session.query(Post)\
+            .filter(or_(Post.title.like(f'%{search_keyword}%'), Post.content.like(f'%{search_keyword}%')))\
+            .count()
 
     has_next = False
     if total_data > (offset + len(posts)):
@@ -31,7 +43,7 @@ def home():
 
     upload_folder = app.app.config['UPLOAD_FOLDER']
 
-    return render_template('index.html', posts=posts, page_title='Home',
+    return render_template('index.html', posts=posts, page_title='Home', search_keyword=search_keyword,
                            has_prev=has_prev, has_next=has_next, page=page, upload_folder=upload_folder)
 
 
@@ -161,13 +173,21 @@ def logout():
 @admin_required
 def admin():
     page = request.args.get('page')
+    search_keyword = request.args.get('search_keyword')
+
     if page is None: page = 1
     else: page = int(page)
 
-    total_user = db.session.query(User).count()
     limit = 10
     offset = (page-1) * limit
-    users = db.session.query(User).limit(limit).offset(offset).all()
+
+    if search_keyword is None:
+        total_user = db.session.query(User).count()
+        users = db.session.query(User).limit(limit).offset(offset).all()
+    else:
+        total_user = db.session.query(User).filter(User.username.like(f'%{search_keyword}%')).count()
+        users = db.session.query(User).filter(User.username.like(f'%{search_keyword}%'))\
+            .limit(limit).offset(offset).all()
 
     has_next = False
     if total_user > (offset+len(users)):
@@ -177,7 +197,8 @@ def admin():
     if page > 1:
         has_prev = True
 
-    return render_template('list_user.html', users=users, has_next=has_next, has_prev=has_prev, page=page)
+    return render_template('list_user.html', users=users, search_keyword=search_keyword,
+                           has_next=has_next, has_prev=has_prev, page=page)
 
 
 @admin_blueprint.route('/update-user-status', methods=['POST'])
