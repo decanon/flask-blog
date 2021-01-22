@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>My Account</title>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+
+  <!-- Blog Entries Column -->
+  <div class="col-md-8">
+
+    <h1 class="my-4">My Account</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="mb-4">
+        {% if user != None %}
+        <div class="row">
+            <div class="col-2">Username:</div>
+            <div class="col">{{ user.username }}</div>
+        </div>
+        <div class="row">
+            <div class="col-2">Email:</div>
+            <div class="col">{{ user.email }}</div>
+        </div>
+        <div class="row">
+            <div class="col-2">Password:</div>
+            <div class="col"><a href="{{ url_for('admin.change_pwd') }}">Change Password</a></div>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+  </div>
+
+</div>
+<!-- /.row -->
+{% endblock%}
+
+
+

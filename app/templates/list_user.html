@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Admin</title>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+
+  <!-- Blog Entries Column -->
+  <div class="col-md-8">
+
+    <h1 class="my-4">Admin</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Blog Post -->
+    <div>
+      <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.username|safe }}</td>
+          <td>{{ user.email|safe }}</td>
+          <td>{{ user.role|safe }}</td>
+          <td>
+            {% if user.is_active %}
+              Active
+            {% else %}
+              Not Active
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="/update-user-status">
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              {% if user.is_active %}
+                <input type='submit' class="btn btn-primary" value='Deactivate'>
+              {% else %}
+                <input type='submit' class="btn btn-primary" value='Activate'>
+              {% endif %}
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+
+    <!-- Pagination -->
+    <ul class="pagination justify-content-center mb-4">
+      {% if has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page-1 }}">&lt;&lt; Prev</a>
+      </li>
+      {% endif %}
+      {% if has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page+1 }}">Next &gt;&gt;</a>
+      </li>
+      {% endif %}
+    </ul>
+
+  </div>
+
+  <!-- Sidebar Widgets Column -->
+  <div class="col-md-4">
+
+    <!-- Search Widget -->
+    <div class="card my-4">
+      <h5 class="card-header">Search</h5>
+      <div class="card-body">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search for...">
+          <span class="input-group-append">
+            <button class="btn btn-secondary" type="button">Go!</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Widget -->
+    <!--
+    <div class="card my-4">
+      <h5 class="card-header">Categories</h5>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-6">
+            <ul class="list-unstyled mb-0">
+              <li>
+                <a href="#">Web Design</a>
+              </li>
+              <li>
+                <a href="#">HTML</a>
+              </li>
+              <li>
+                <a href="#">Freebies</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-6">
+            <ul class="list-unstyled mb-0">
+              <li>
+                <a href="#">JavaScript</a>
+              </li>
+              <li>
+                <a href="#">CSS</a>
+              </li>
+              <li>
+                <a href="#">Tutorials</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+
+    <!-- Side Widget -->
+    <div class="card my-4">
+      <h5 class="card-header">Side Widget</h5>
+      <div class="card-body">
+        You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<!-- /.row -->
+{% endblock%}
+
+
+
