@@ -1,4 +1,5 @@
 .idea/
+flask_blog.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
